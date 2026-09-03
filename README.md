@@ -31,6 +31,3 @@ No build step — it's one HTML file with no dependencies beyond three Google Fo
 
 All copy lives directly in `index.html`, organised by section (`#origins`, `#now`, `#people`, `#here`, `#move`). Statistics will age — the market-size and jobs figures in the **Now** section are dated to Ukie's 2025/26 reporting and should be refreshed periodically from [ukie.org.uk](https://ukie.org.uk/).
 
----
-
-🤖 Built with [Claude Code](https://claude.com/claude-code)
