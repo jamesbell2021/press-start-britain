@@ -1,4 +1,4 @@
-# Press Start Britain
+# Games Industry in Northern Ireland
 
 A single-page site making the case for games as a career: where the British games industry came from, how big it is right now, and eight real people whose careers show there's no one way in.
 
