@@ -46,6 +46,11 @@ Every statistic and biographical claim on the page traces back to one of these. 
 
 ## Northern Ireland
 
+- [David Perry (game developer) — Wikipedia](https://en.wikipedia.org/wiki/David_Perry_(game_developer))
+- [David Perry — the life of a legend — MCV/DEVELOP](https://mcvuk.com/business-news/publishing/david-perry-the-life-of-a-legend/)
+- [MDK — Wikipedia](https://en.wikipedia.org/wiki/MDK)
+- [Shiny Entertainment — Wikipedia](https://en.wikipedia.org/wiki/Shiny_Entertainment)
+- [Gaikai — Wikipedia](https://en.wikipedia.org/wiki/Gaikai)
 - [Hypixel Studios to establish headquarters in Derry~Londonderry with support from Riot Games — Northern Ireland Screen](https://northernirelandscreen.co.uk/news/hypixel-studios-establish-headquarters-derrylondonderry-support-riot-games/)
 - [Indie Region Focus: Northern Ireland — Barclays Games and Creative](https://games.creative.barclays/resource-hub/games/community/indie-region-focus-northern-ireland/)
 - [About — Buck Eejit Games](https://buckeejit.games/about/)

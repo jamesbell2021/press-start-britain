@@ -98,6 +98,13 @@
     color:var(--text-dim); text-decoration:none; padding:4px 0; border-bottom:2px solid transparent;
   }
   .navlinks a:hover{ color:var(--text); border-color:var(--accent); }
+  .sound-toggle{
+    font-family:var(--mono); font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-dim); background:transparent; border:1px solid var(--rule); border-radius:20px;
+    padding:6px 12px; cursor:pointer; white-space:nowrap;
+  }
+  .sound-toggle:hover{ color:var(--text); border-color:var(--accent); }
+  .sound-toggle[aria-pressed="true"]{ color:var(--accent); border-color:var(--accent); }
 
   /* ---------- generic section rhythm ---------- */
   section{ padding:64px 0; border-bottom:1px solid var(--rule); }
@@ -199,6 +206,18 @@
   .person p.bio{ font-size:0.92rem; color:var(--text-dim); margin:0; }
   .person .why{ font-size:0.88rem; font-style:italic; color:var(--text); margin:0; padding-top:10px; border-top:1px solid var(--rule); }
   .person .why b{ color:var(--accent); font-style:normal; font-family:var(--mono); font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; display:block; margin-bottom:4px; }
+  .fact-hint{ font-family:var(--mono); font-size:0.82em; color:var(--accent); }
+  .fact-btn{
+    align-self:flex-start; font-family:var(--mono); font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--accent); background:none; border:none; padding:0; margin-top:-2px; cursor:pointer;
+    text-decoration:underline; text-underline-offset:3px;
+  }
+  .fact-btn:hover{ color:var(--text); }
+  .fact{ font-size:0.85rem; color:var(--text-dim); background:var(--surface-2); border-radius:6px; padding:10px 12px; margin:0; }
+
+  @keyframes pulseScale{ 0%{ transform:scale(1); } 35%{ transform:scale(1.015); } 100%{ transform:scale(1); } }
+  .pulse{ outline:3px solid var(--accent); outline-offset:4px; animation:pulseScale 0.5s ease; }
+  @media (prefers-reduced-motion: reduce){ .pulse{ animation:none; } }
 
   .person.capstone{
     grid-column:1 / -1;
@@ -215,6 +234,40 @@
   .ni-card{ padding-left:16px; border-left:3px solid var(--accent); }
   .ni-card h4{ font-family:var(--display); font-size:1.1rem; margin:0 0 6px; }
   .ni-card p{ font-size:0.92rem; color:var(--text-dim); margin:0; }
+
+  /* ---------- quiz ---------- */
+  .quiz{
+    margin-top:32px; background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:26px 26px 24px; max-width:640px;
+  }
+  .quiz-progress{ display:flex; gap:6px; margin-bottom:20px; }
+  .quiz-progress span{ flex:1; height:4px; border-radius:2px; background:var(--rule); }
+  .quiz-progress span.active{ background:var(--accent); }
+  .quiz-progress span.done{ background:var(--accent); opacity:0.5; }
+  .quiz-kicker{ font-family:var(--mono); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); margin:0 0 10px; }
+  #quizPrompt{ font-size:1.4rem; margin:0 0 20px; }
+  .quiz-options{ display:flex; flex-direction:column; gap:10px; }
+  .quiz-opt{
+    text-align:left; font-family:var(--body); font-size:0.95rem; color:var(--text);
+    background:var(--surface-2); border:1px solid var(--rule); border-radius:8px;
+    padding:12px 16px; cursor:pointer; transition:border-color .15s ease, transform .15s ease;
+  }
+  .quiz-opt:hover{ border-color:var(--accent); transform:translateX(3px); }
+  #resultTitle{ font-size:1.9rem; margin:0 0 10px; }
+  #resultBlurb{ color:var(--text-dim); margin:0 0 20px; max-width:56ch; }
+  .quiz-result-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+  .btn{
+    font-family:var(--mono); font-size:0.76rem; letter-spacing:0.05em; text-transform:uppercase;
+    padding:11px 18px; border-radius:6px; border:1px solid var(--accent); background:var(--accent); color:var(--accent-ink);
+    cursor:pointer;
+  }
+  .btn.ghost{ background:transparent; color:var(--accent); }
+  .quiz-coda{ font-size:0.85rem; font-style:italic; color:var(--text-dim); border-top:1px solid var(--rule); padding-top:14px; margin:0 0 16px; max-width:56ch; }
+  .quiz-retake{
+    font-family:var(--mono); font-size:0.72rem; color:var(--text-dim); background:none; border:none; cursor:pointer;
+    text-decoration:underline; text-underline-offset:3px; padding:0;
+  }
+  .quiz-retake:hover{ color:var(--accent); }
 
   /* ---------- pathways ---------- */
   .paths{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:16px; margin-top:32px; }
@@ -262,6 +315,7 @@
       <li><a href="#here">Here</a></li>
       <li><a href="#move">Your move</a></li>
     </ul>
+    <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false">♪ Sound off</button>
   </div>
 </header>
 
@@ -292,6 +346,7 @@
           <h3>The bedroom years</h3>
           <p>The ZX Spectrum, BBC Micro and Commodore 64 put a programmable computer in ordinary British homes for the first time. Teenagers taught themselves BASIC and machine code, then sold what they made by mail order out of spare bedrooms and terraced houses.</p>
           <ul>
+            <li><span class="yr">1982</span>David Perry, 15, from Lisburn, writes his first game and sends it to a magazine — Northern Ireland's own bedroom coder, a decade before he founds Shiny Entertainment.</li>
             <li><span class="yr">1983</span>Matthew Smith, 17, codes <em>Manic Miner</em> in eight weeks in Wallasey — the first ZX Spectrum game with in-game music, and an overnight hit.</li>
             <li><span class="yr">1982–84</span>Tim &amp; Chris Stamper build Ultimate Play the Game into one of the decade's biggest studios with <em>Jetpac</em>, <em>Sabre Wulf</em> and <em>Knight Lore</em>.</li>
             <li><span class="yr">1984</span>Cambridge undergraduates David Braben and Ian Bell fit an entire simulated galaxy into 32 kilobytes for <em>Elite</em> on the BBC Micro.</li>
@@ -337,17 +392,17 @@
 
       <div class="tiles reveal">
         <div class="tile">
-          <div class="n">£8.76bn</div>
+          <div class="n countup" data-prefix="£" data-target="8.76" data-decimals="2" data-suffix="bn">£8.76bn</div>
           <div class="l">UK consumer spend on games, 2025</div>
           <div class="s">up 7.4% year on year — Ukie</div>
         </div>
         <div class="tile">
-          <div class="n">£6bn+</div>
+          <div class="n countup" data-prefix="£" data-target="6" data-suffix="bn+">£6bn+</div>
           <div class="l">Annual value added by UK games</div>
           <div class="s">supports 73,000+ jobs — Ukie</div>
         </div>
         <div class="tile">
-          <div class="n">2,100+</div>
+          <div class="n countup" data-target="2100" data-comma="true" data-suffix="+">2,100+</div>
           <div class="l">Active games studios &amp; publishers</div>
           <div class="s">~75% based outside London — Ukie</div>
         </div>
@@ -391,74 +446,99 @@
   <section id="people">
     <div class="wrap">
       <p class="eyebrow">People</p>
-      <h2>Eight people who prove there's no one way in</h2>
-      <p class="lede">Programmers, designers, writers and business leaders — real case studies, not job titles.</p>
+      <h2>Nine people who prove there's no one way in</h2>
+      <p class="lede">Programmers, designers, writers and business leaders — real case studies, not job titles. Tap <span class="fact-hint">+ fun fact</span> on any of them for a bonus detail.</p>
 
       <div class="people reveal">
-        <div class="person">
+        <div class="person" id="p-msmith">
           <div class="top">
             <div class="badge">MS</div>
             <div><h4>Matthew Smith</h4><div class="role">Programmer · Software Projects</div></div>
           </div>
           <p class="bio">In 1983, seventeen-year-old Matthew Smith spent eight weeks coding <em>Manic Miner</em> in his home in Wallasey. Released for the ZX Spectrum, it was the first Spectrum game with in-game music and sold in huge numbers almost overnight.</p>
           <p class="why"><b>Why it matters</b>You don't need permission to start. You need a finished game.</p>
+          <button class="fact-btn" type="button" data-target="fact-msmith" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-msmith" hidden>Manic Miner's tunes were adapted from Grieg's "In the Hall of the Mountain King" and "The Blue Danube" — squeezed into the ZX Spectrum's single-channel beeper.</p>
         </div>
 
-        <div class="person">
+        <div class="person" id="p-stampers">
           <div class="top">
             <div class="badge">T&amp;C</div>
             <div><h4>Tim &amp; Chris Stamper</h4><div class="role">Founders · Ultimate Play the Game → Rare</div></div>
           </div>
           <p class="bio">The Stamper brothers turned a small Spectrum outfit into one of the defining studios of the 1980s, then moved with the market — founding Rare and becoming Nintendo's key Western studio with <em>Donkey Kong Country</em> and <em>GoldenEye 007</em>.</p>
           <p class="why"><b>Why it matters</b>The best studios don't survive by staying still — they follow the hardware and the players.</p>
+          <button class="fact-btn" type="button" data-target="fact-stampers" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-stampers" hidden>Chris programmed, Tim drew the graphics — Ultimate Play the Game's entire creative team was two brothers splitting the work in half.</p>
         </div>
 
-        <div class="person">
+        <div class="person" id="p-braben">
           <div class="top">
             <div class="badge">DB</div>
             <div><h4>David Braben</h4><div class="role">Programmer, founder · Elite, Frontier Developments</div></div>
           </div>
           <p class="bio">As Cambridge undergraduates, David Braben and Ian Bell spent two years fitting a simulated galaxy into a BBC Micro for <em>Elite</em> (1984). Braben founded Frontier Developments in 1994 and is still its CEO, forty years on.</p>
           <p class="why"><b>Why it matters</b>One of the biggest technical achievements in games history came from a memory limit, not despite one.</p>
+          <button class="fact-btn" type="button" data-target="fact-braben" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-braben" hidden>In 2015, Guinness World Records certified <em>Elite</em> as the longest-running space-simulation series in history.</p>
         </div>
 
-        <div class="person">
+        <div class="person" id="p-djones">
           <div class="top">
             <div class="badge">DJ</div>
             <div><h4>David Jones</h4><div class="role">Founder, designer · DMA Design → Rockstar North</div></div>
           </div>
           <p class="bio">David Jones founded DMA Design in Dundee, made <em>Lemmings</em> a worldwide hit in 1991, then moved to Edinburgh and made the first <em>Grand Theft Auto</em>. His studio, renamed Rockstar North, went on to make GTA V.</p>
           <p class="why"><b>Why it matters</b>Scotland, not California, is where the biggest entertainment franchise on the planet is made.</p>
+          <button class="fact-btn" type="button" data-target="fact-djones" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-djones" hidden>Before Grand Theft Auto, DMA Design's biggest hit was <em>Lemmings</em> (1991) — a puzzle game about saving suicidal creatures, not stealing cars.</p>
         </div>
 
-        <div class="person">
+        <div class="person" id="p-bestwick">
           <div class="top">
             <div class="badge">DEB</div>
             <div><h4>Debbie Bestwick MBE</h4><div class="role">CEO, 1990–2024 · Team17</div></div>
           </div>
           <p class="bio">Debbie Bestwick co-founded Team17 in Wakefield in 1990, starting in sales and marketing rather than code. She became sole CEO in 2010, listed the company on the stock market in 2018, and grew it into a major indie publisher before stepping down in 2024.</p>
           <p class="why"><b>Why it matters</b>Games need people who understand players and money, not only people who can write code.</p>
+          <button class="fact-btn" type="button" data-target="fact-bestwick" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-bestwick" hidden>Team17 was formed by merging a British studio, 17-Bit Software, with a Swedish one, Team7 — hence the name.</p>
         </div>
 
-        <div class="person">
+        <div class="person" id="p-reddy">
           <div class="top">
             <div class="badge">SR</div>
             <div><h4>Siobhan Reddy</h4><div class="role">Studio director · Media Molecule</div></div>
           </div>
           <p class="bio">Siobhan Reddy moved from Australia to the UK at eighteen, worked her way through Perfect Entertainment and seven years at Criterion Games, then co-founded Media Molecule — directing <em>LittleBigPlanet</em>, <em>Tearaway</em> and <em>Dreams</em>.</p>
           <p class="why"><b>Why it matters</b>Britain's games industry isn't only built by people born here — it's built by people who chose to come.</p>
+          <button class="fact-btn" type="button" data-target="fact-reddy" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-reddy" hidden>Before Media Molecule, Reddy spent seven years at Criterion Games in Guildford — the studio behind the <em>Burnout</em> series.</p>
         </div>
 
-        <div class="person">
+        <div class="person" id="p-pratchett">
           <div class="top">
             <div class="badge">RP</div>
             <div><h4>Rhianna Pratchett</h4><div class="role">Narrative designer, writer</div></div>
           </div>
           <p class="bio">Trained as a journalist, Rhianna Pratchett moved into games writing in 2002. Her script for <em>Heavenly Sword</em> earned a BAFTA nomination, <em>Overlord</em> won a Writers' Guild award, and she was lead writer on the 2013 <em>Tomb Raider</em> reboot.</p>
           <p class="why"><b>Why it matters</b>Games need the same craft as any other storytelling medium — a career here doesn't have to start with code.</p>
+          <button class="fact-btn" type="button" data-target="fact-pratchett" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-pratchett" hidden>Before writing games, Pratchett was a journalist for <em>PC Zone</em> and <em>The Guardian</em>.</p>
         </div>
 
-        <div class="person capstone">
+        <div class="person" id="p-perry">
+          <div class="top">
+            <div class="badge">DP</div>
+            <div><h4>David Perry</h4><div class="role">Programmer, founder · Shiny Entertainment, Gaikai</div></div>
+          </div>
+          <p class="bio">David Perry, from Lisburn, wrote his first game at fifteen in 1982 and sent it to a magazine — Northern Ireland's own bedroom coder. He programmed 16-bit hits like <em>Earthworm Jim</em>, founded Shiny Entertainment in 1993, and produced the cult classic <em>MDK</em> (1997). Two decades later he founded the cloud-gaming platform Gaikai and sold it to Sony for $380 million in 2012.</p>
+          <p class="why"><b>Why it matters</b>The bedroom-coder story didn't happen somewhere else. It happened here too — and it didn't stop in the 1980s.</p>
+          <button class="fact-btn" type="button" data-target="fact-perry" aria-expanded="false">+ fun fact</button>
+          <p class="fact" id="fact-perry" hidden>Shiny Entertainment never officially confirmed what "MDK" stood for — "Murder, Death, Kill" is the most commonly cited unofficial answer.</p>
+        </div>
+
+        <div class="person capstone" id="p-hassabis">
           <div class="top">
             <div class="badge">DH</div>
             <div><h4>Demis Hassabis</h4><div class="role">Programmer, designer → Nobel laureate</div></div>
@@ -466,6 +546,8 @@
           <div class="main">
             <p class="bio">At seventeen, Demis Hassabis won a magazine competition to work at Bullfrog Productions and ended up co-designing and lead-programming <em>Theme Park</em> (1994) with Peter Molyneux. He later founded Elixir Studios, then left games to study computer science and cognitive neuroscience before co-founding DeepMind. In 2024 he won the Nobel Prize in Chemistry for AlphaFold, DeepMind's system for predicting protein structures.</p>
             <p class="why"><b>Why it matters</b>The problem-solving you learn making games doesn't stay in games. It can end up solving problems in biology, medicine — anywhere.</p>
+            <button class="fact-btn" type="button" data-target="fact-hassabis" aria-expanded="false">+ fun fact</button>
+            <p class="fact" id="fact-hassabis" hidden>He got his start after entering an <em>Amiga Power</em> magazine competition to win a job at Bullfrog Productions.</p>
           </div>
         </div>
       </div>
@@ -476,7 +558,8 @@
     <div class="wrap">
       <p class="eyebrow">Here</p>
       <h2>It's already happening in Northern Ireland</h2>
-      <p class="lede">You don't have to move to Edinburgh or Guildford to start. It's happening closer than that.</p>
+      <p class="lede">You don't have to move to Edinburgh or Guildford to start. It's happening closer than that — and it isn't even new.</p>
+      <p>In 1982, Northern Ireland had its own bedroom coder: <a href="#p-perry">David Perry</a>, from Lisburn, sent his first game to a magazine aged fifteen. He went on to found Shiny Entertainment and produce cult hits like <em>Earthworm Jim</em> and <em>MDK</em> — proof this story has always included here.</p>
 
       <div class="ni-grid reveal">
         <div class="ni-card">
@@ -499,25 +582,49 @@
     <div class="wrap">
       <p class="eyebrow">Your move</p>
       <h2>How people actually get in</h2>
-      <p class="lede">There's no single front door. These are the routes people are using right now.</p>
+      <p class="lede">There's no single front door. These are the routes people are using right now — or take the thirty-second quiz below and start with the one that fits you.</p>
+
+      <div class="quiz reveal" id="quiz">
+        <div class="quiz-progress" id="quizProgress" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <div id="quizQuestion">
+          <p class="quiz-kicker">Question <span id="quizStep">1</span> of 5 — find your route in</p>
+          <h3 id="quizPrompt"></h3>
+          <div class="quiz-options" id="quizOptions"></div>
+        </div>
+
+        <div id="quizResult" hidden>
+          <p class="quiz-kicker">Your closest match</p>
+          <h3 id="resultTitle"></h3>
+          <p id="resultBlurb"></p>
+          <div class="quiz-result-actions">
+            <button class="btn" type="button" id="resultSeePerson">See their story</button>
+            <button class="btn ghost" type="button" id="resultSeePath">See your route</button>
+          </div>
+          <p class="quiz-coda">Whichever track you land on — remember, Demis Hassabis started as a Bullfrog playtester and ended up with a Nobel Prize. The skills travel.</p>
+          <button class="quiz-retake" type="button" id="quizRetake">↺ Retake the quiz</button>
+        </div>
+      </div>
 
       <div class="paths reveal">
-        <div class="path">
+        <div class="path" id="path-college">
           <div class="num">01</div>
           <h4>College, portfolio-first</h4>
           <p>Courses like this one — build real, finished work you can show, not just theory.</p>
         </div>
-        <div class="path">
+        <div class="path" id="path-apprentice">
           <div class="num">02</div>
           <h4>Apprenticeships</h4>
           <p>Earn while you learn. Ukie's national Workforce Strategy is actively growing this route into studios.</p>
         </div>
-        <div class="path">
+        <div class="path" id="path-jam">
           <div class="num">03</div>
           <h4>Game jams</h4>
           <p>Ukie's Student Game Jam and Student Conference reach 3,000+ young developers a year. A finished small game beats a big unfinished one on a portfolio.</p>
         </div>
-        <div class="path">
+        <div class="path" id="path-uni">
           <div class="num">04</div>
           <h4>University, or just ship something</h4>
           <p>A degree is one route in — a self-published game or mod that people actually play is another.</p>
@@ -552,6 +659,7 @@
           <li><a href="https://en.wikipedia.org/wiki/Siobhan_Reddy" target="_blank" rel="noopener">Siobhan Reddy</a></li>
           <li><a href="https://en.wikipedia.org/wiki/Rhianna_Pratchett" target="_blank" rel="noopener">Rhianna Pratchett</a></li>
           <li><a href="https://en.wikipedia.org/wiki/Demis_Hassabis" target="_blank" rel="noopener">Demis Hassabis</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/David_Perry_(game_developer)" target="_blank" rel="noopener">David Perry</a></li>
           <li><a href="https://northernirelandscreen.co.uk/news/hypixel-studios-establish-headquarters-derrylondonderry-support-riot-games/" target="_blank" rel="noopener">Hypixel Studios in Derry~Londonderry</a></li>
         </ul>
       </div>
@@ -561,24 +669,262 @@
 </footer>
 
 <script>
-  (function(){
-    "use strict";
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var items = document.querySelectorAll('.reveal');
-    if(reduce || !('IntersectionObserver' in window)){
-      items.forEach(function(el){ el.classList.add('in'); });
-      return;
-    }
-    var io = new IntersectionObserver(function(entries){
+(function(){
+  "use strict";
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- reveal-on-scroll ---------- */
+  var revealItems = document.querySelectorAll('.reveal');
+  if(reduce || !('IntersectionObserver' in window)){
+    revealItems.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var revealIO = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if(entry.isIntersecting){
           entry.target.classList.add('in');
-          io.unobserve(entry.target);
+          revealIO.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12 });
-    items.forEach(function(el){ io.observe(el); });
-  })();
+    revealItems.forEach(function(el){ revealIO.observe(el); });
+  }
+
+  /* ---------- sound engine ---------- */
+  var soundOn = false;
+  var audioCtx = null;
+  function beep(freq, dur, type){
+    if(!soundOn) return;
+    try{
+      audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+      var o = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      o.type = type || 'square';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + dur);
+    }catch(e){}
+  }
+  function chime(){
+    beep(660, 0.09, 'triangle');
+    setTimeout(function(){ beep(880, 0.09, 'triangle'); }, 90);
+    setTimeout(function(){ beep(1100, 0.16, 'triangle'); }, 180);
+  }
+  var soundToggle = document.getElementById('soundToggle');
+  soundToggle.addEventListener('click', function(){
+    soundOn = !soundOn;
+    soundToggle.setAttribute('aria-pressed', String(soundOn));
+    soundToggle.textContent = soundOn ? '♪ Sound on' : '♪ Sound off';
+    beep(700, 0.06);
+  });
+
+  /* ---------- animated stat counters ---------- */
+  function formatCount(val, decimals, comma){
+    if(decimals) return val.toFixed(decimals);
+    return comma ? Math.round(val).toLocaleString('en-GB') : String(Math.round(val));
+  }
+  function countUp(el){
+    var target = parseFloat(el.dataset.target);
+    var decimals = parseInt(el.dataset.decimals || '0', 10);
+    var comma = el.dataset.comma === 'true';
+    var prefix = el.dataset.prefix || '';
+    var suffix = el.dataset.suffix || '';
+    if(reduce){ el.textContent = prefix + formatCount(target, decimals, comma) + suffix; return; }
+    var start = null, duration = 900;
+    function step(ts){
+      if(start === null) start = ts;
+      var p = Math.min(1, (ts - start) / duration);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = prefix + formatCount(target * eased, decimals, comma) + suffix;
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counters = document.querySelectorAll('.countup');
+  if(counters.length){
+    if(reduce || !('IntersectionObserver' in window)){
+      counters.forEach(countUp);
+    } else {
+      var countIO = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            countUp(entry.target);
+            countIO.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.6 });
+      counters.forEach(function(el){ countIO.observe(el); });
+    }
+  }
+
+  /* ---------- fun-fact toggles ---------- */
+  document.querySelectorAll('.fact-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = document.getElementById(btn.dataset.target);
+      if(!target) return;
+      var willOpen = target.hidden;
+      target.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+      btn.textContent = willOpen ? '– hide fact' : '+ fun fact';
+      beep(willOpen ? 640 : 440, 0.05);
+    });
+  });
+
+  /* ---------- jump-and-highlight ---------- */
+  function jumpTo(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    el.classList.remove('pulse');
+    void el.offsetWidth;
+    el.classList.add('pulse');
+    setTimeout(function(){ el.classList.remove('pulse'); }, 1600);
+  }
+
+  /* ---------- "find your route in" quiz ---------- */
+  var QUIZ_QUESTIONS = [
+    {
+      prompt: "A new game idea is falling apart. What do you fix first?",
+      options: [
+        { text: "The code that keeps crashing", track: "build" },
+        { text: "The budget and the deadline", track: "lead" },
+        { text: "The bit that isn't actually fun yet", track: "design" },
+        { text: "Why nobody can explain what's happening on screen", track: "tell" }
+      ]
+    },
+    {
+      prompt: "Pick a way to spend a free Saturday.",
+      options: [
+        { text: "Taking something apart to see how it works", track: "build" },
+        { text: "Running a small side-hustle or club", track: "lead" },
+        { text: "Modding a game, or building a level in one", track: "design" },
+        { text: "Writing, or losing an afternoon in a book", track: "tell" }
+      ]
+    },
+    {
+      prompt: "Your favourite part of any game is...",
+      options: [
+        { text: "How smoothly it runs, even when it's chaos on screen", track: "build" },
+        { text: "Knowing it made real money and still stayed good", track: "lead" },
+        { text: "The one mechanic that makes the whole thing click", track: "design" },
+        { text: "The characters you still think about after the credits", track: "tell" }
+      ]
+    },
+    {
+      prompt: "A teammate says your idea won't work. You...",
+      options: [
+        { text: "Prototype it fast enough to prove them right or wrong", track: "build" },
+        { text: "Ask what it would cost to find out", track: "lead" },
+        { text: "Playtest it on someone else first", track: "design" },
+        { text: "Ask what's actually bothering them about it", track: "tell" }
+      ]
+    },
+    {
+      prompt: "Pick a school subject you'd happily do extra of.",
+      options: [
+        { text: "Computing or maths", track: "build" },
+        { text: "Business or economics", track: "lead" },
+        { text: "Art or product design", track: "design" },
+        { text: "English or media studies", track: "tell" }
+      ]
+    }
+  ];
+
+  var TRACKS = {
+    build: {
+      label: "The Engineer",
+      blurb: "You care whether it actually works. That's the instinct that fits an entire simulated galaxy into a BBC Micro's memory.",
+      personId: "p-braben", pathId: "path-jam"
+    },
+    lead: {
+      label: "The Studio Builder",
+      blurb: "You think in teams, budgets and long games. That's how a sales-and-marketing hire ends up running a public company.",
+      personId: "p-bestwick", pathId: "path-apprentice"
+    },
+    design: {
+      label: "The Systems Mind",
+      blurb: "You chase the one mechanic that makes everything click. That's a creative-director instinct.",
+      personId: "p-reddy", pathId: "path-college"
+    },
+    tell: {
+      label: "The Storyteller",
+      blurb: "You remember characters, not just mechanics. Games need that craft as much as any other medium.",
+      personId: "p-pratchett", pathId: "path-uni"
+    }
+  };
+
+  var quizStepEl = document.getElementById('quizStep');
+  var quizPromptEl = document.getElementById('quizPrompt');
+  var quizOptionsEl = document.getElementById('quizOptions');
+  var quizProgressEl = document.getElementById('quizProgress');
+  var quizQuestionView = document.getElementById('quizQuestion');
+  var quizResultView = document.getElementById('quizResult');
+  var quizCurrent = 0;
+  var quizAnswers = [];
+
+  function renderQuizQuestion(){
+    var q = QUIZ_QUESTIONS[quizCurrent];
+    quizStepEl.textContent = quizCurrent + 1;
+    quizPromptEl.textContent = q.prompt;
+    quizOptionsEl.innerHTML = '';
+    q.options.forEach(function(opt){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'quiz-opt';
+      b.textContent = opt.text;
+      b.addEventListener('click', function(){ chooseQuizOption(opt.track); });
+      quizOptionsEl.appendChild(b);
+    });
+    Array.prototype.forEach.call(quizProgressEl.children, function(dot, i){
+      dot.classList.toggle('done', i < quizCurrent);
+      dot.classList.toggle('active', i === quizCurrent);
+    });
+  }
+
+  function chooseQuizOption(trackKey){
+    quizAnswers.push(trackKey);
+    beep(560, 0.05);
+    quizCurrent++;
+    if(quizCurrent >= QUIZ_QUESTIONS.length){ showQuizResult(); }
+    else { renderQuizQuestion(); }
+  }
+
+  function showQuizResult(){
+    var tally = {};
+    quizAnswers.forEach(function(t){ tally[t] = (tally[t] || 0) + 1; });
+    var max = Math.max.apply(null, Object.keys(tally).map(function(k){ return tally[k]; }));
+    var tied = Object.keys(tally).filter(function(k){ return tally[k] === max; });
+    var winner = tied[0];
+    for(var i = quizAnswers.length - 1; i >= 0; i--){
+      if(tied.indexOf(quizAnswers[i]) !== -1){ winner = quizAnswers[i]; break; }
+    }
+    var t = TRACKS[winner];
+
+    quizQuestionView.hidden = true;
+    quizResultView.hidden = false;
+    Array.prototype.forEach.call(quizProgressEl.children, function(dot){
+      dot.classList.add('done'); dot.classList.remove('active');
+    });
+
+    document.getElementById('resultTitle').textContent = t.label;
+    document.getElementById('resultBlurb').textContent = t.blurb;
+    document.getElementById('resultSeePerson').onclick = function(){ jumpTo(t.personId); };
+    document.getElementById('resultSeePath').onclick = function(){ jumpTo(t.pathId); };
+    chime();
+  }
+
+  document.getElementById('quizRetake').addEventListener('click', function(){
+    quizCurrent = 0;
+    quizAnswers = [];
+    quizResultView.hidden = true;
+    quizQuestionView.hidden = false;
+    beep(500, 0.05);
+    renderQuizQuestion();
+  });
+
+  renderQuizQuestion();
+})();
 </script>
 
 </body>
